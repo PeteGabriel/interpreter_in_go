@@ -55,6 +55,11 @@ func NewToken(t Type, l byte) *Token {
 var keywords = map[string]Type{
 	"fn": FUNCTION,
 	"let": LET,
+	"if" : IF,
+	"else" : ELSE,
+	"true" : TRUE,
+	"false" : FALSE,
+	"return" : RETURN,
 }
 
 //GetIdentifier check if given word is an identifier or a keyword.

@@ -58,7 +58,7 @@ func (l *Lexer) NextToken() *token.Token {
 			return tkn
 		}else if isDigit(l.char){
 			tkn = &token.Token{}
-			tkn.Literal = l.readNumber(l.char)
+			tkn.Literal = l.readNumber()
 			tkn.Type = token.INT
 			return tkn
 		}else {
@@ -81,9 +81,8 @@ func (l *Lexer) next() {
 	l.readPos += 1
 }
 
-type predicate func(byte) bool
-
-func (l *Lexer) read(pred predicate) string {
+//read a certain value accordingly with the given predicate
+func (l *Lexer) read(pred func(byte) bool) string {
 	pos := l.pos
 	for pred(l.char) {
 		l.next()
@@ -96,8 +95,8 @@ func (l *Lexer) readIdentifier() string {
 	return l.read(isLetter)
 }
 
-//read entire digit
-func (l *Lexer) readNumber(c byte) string {
+//read entire digit. This ignores anything different than integers.
+func (l *Lexer) readNumber() string {
 	return l.read(isDigit)
 }
 

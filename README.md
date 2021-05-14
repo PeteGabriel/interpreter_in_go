@@ -73,6 +73,8 @@ from types, keywords and identifiers (variable and function names) among others.
 by using constants. "ILLEGAL" will denote something we are not expecting and "EOF" will mark the end of our reading
 process.
 
+The lexer will ignore spaces since Monkey language does not care for them. Also `_` are supported as part of variable 
+names.
 
 ## The Parser
 
