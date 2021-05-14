@@ -31,7 +31,17 @@ func (l *Lexer) NextToken() *token.Token {
 
 	switch l.char {
 	case '=':
-		tkn = token.NewToken(token.ASSIGN, l.char)
+		nxt := l.peekChar()
+		if nxt == '=' {
+			tkn = &token.Token{
+				Literal : "==",
+				Type: token.EQUAL,
+			}
+			//we just read another token, we have to move the pointer forward as well.
+			l.next()
+		} else {
+			tkn = token.NewToken(token.ASSIGN, l.char)
+	    }
 	case ';':
 		tkn = token.NewToken(token.SEMICOLON, l.char)
 	case '(':
@@ -47,7 +57,16 @@ func (l *Lexer) NextToken() *token.Token {
 	case '}':
 		tkn = token.NewToken(token.RBRACE, l.char)
 	case '!':
-		tkn = token.NewToken(token.BANG, l.char)
+		nxt := l.peekChar()
+		if nxt == '=' {
+			tkn = &token.Token{
+				Literal : "!=",
+				Type: token.NOT_EQUAL,
+			}
+			l.next()
+		} else {
+			tkn = token.NewToken(token.BANG, l.char)
+		}
 	case '*':
 		tkn = token.NewToken(token.ASTERISK, l.char)
 	case '/':
@@ -118,4 +137,13 @@ func isLetter(ch byte) bool {
 
 func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
+}
+
+//peekChar helps to check the next char without moving the read pointer.
+func (l *Lexer) peekChar() byte {
+	if l.readPos >= len(l.input) {
+		return 0
+	} else {
+		return l.input[l.readPos]
+	}
 }
