@@ -68,12 +68,12 @@ func (l *Lexer) NextToken() *token.Token {
 			tkn.Literal = l.readIdentifier()
 			tkn.Type = token.GetIdentifier(tkn.Literal)
 			return tkn
-		}else if isDigit(l.char){
+		} else if isDigit(l.char) {
 			tkn = &token.Token{}
 			tkn.Literal = l.readNumber()
 			tkn.Type = token.INT
 			return tkn
-		}else {
+		} else {
 			tkn = token.NewToken(token.ILLEGAL, l.char)
 		}
 	}
@@ -86,7 +86,7 @@ func (l *Lexer) NextToken() *token.Token {
 func (l *Lexer) next() {
 	if l.readPos >= len(l.input) {
 		l.char = 0
-	}else {
+	} else {
 		l.char = l.input[l.readPos]
 	}
 	l.pos = l.readPos

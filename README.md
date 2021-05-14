@@ -1,12 +1,10 @@
 # Interpreter in Go
 
-
 This project reflects the study of the book "Interpreter in Go" writen by Thorsten Ball.
 
 ## Language used - Monkey
 
-"Without a compiler or an interpreter a programming
-language is nothing more than an idea or a specification."
+"Without a compiler or an interpreter a programming language is nothing more than an idea or a specification."
 
 Monkey has the following list of features:
 
@@ -55,9 +53,7 @@ twice(addTwo, 2); // => 6
 * the internal object system
 * the evaluator
 
-
 ## The Lexer
-
 
 ```
 let five = 5;
@@ -68,12 +64,11 @@ let add = fn(x, y) {
 let result = add(five, ten);
 ```
 
-From the example above we can identify tokens like an integer, a keyword or even variable names. We'll distinguish 
-from types, keywords and identifiers (variable and function names) among others. We can specify these in our code
-by using constants. "ILLEGAL" will denote something we are not expecting and "EOF" will mark the end of our reading
-process.
+From the example above we can identify tokens like an integer, a keyword or even variable names. We'll distinguish from
+types, keywords and identifiers (variable and function names) among others. We can specify these in our code by using
+constants. "ILLEGAL" will denote something we are not expecting and "EOF" will mark the end of our reading process.
 
-The lexer will ignore spaces since Monkey language does not care for them. Also `_` are supported as part of variable 
+The lexer will ignore spaces since Monkey language does not care for them. Also `_` are supported as part of variable
 names.
 
 ## The Parser

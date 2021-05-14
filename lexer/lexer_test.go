@@ -11,7 +11,7 @@ func TestNextToken(t *testing.T) {
 
 	input := `=+(){},;`
 
-	tests := []token.Token {
+	tests := []token.Token{
 		{Type: token.ASSIGN, Literal: "="},
 		{Type: token.PLUS, Literal: "+"},
 		{Type: token.LPAREN, Literal: "("},
@@ -42,7 +42,7 @@ func TestNextTokenWithCode(t *testing.T) {
 		let result = add(five, the_number_ten);
 		`
 	tests := []struct {
-		expectedType token.Type
+		expectedType    token.Type
 		expectedLiteral string
 	}{
 		{token.LET, "let"},
@@ -107,7 +107,7 @@ func TestNextTokenWithCode2(t *testing.T) {
 		5 < 10 > 5;
 		`
 	tests := []struct {
-		expectedType token.Type
+		expectedType    token.Type
 		expectedLiteral string
 	}{
 		{token.LET, "let"},
@@ -171,7 +171,6 @@ func TestNextTokenWithCode2(t *testing.T) {
 	}
 }
 
-
 func TestNextTokenWithCode3(t *testing.T) {
 	is := is2.New(t)
 	input := `!-/*5;
@@ -183,7 +182,7 @@ func TestNextTokenWithCode3(t *testing.T) {
 		}`
 
 	tests := []struct {
-		expectedType token.Type
+		expectedType    token.Type
 		expectedLiteral string
 	}{
 		{token.BANG, "!"},

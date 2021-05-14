@@ -6,39 +6,39 @@ that can be expressed as constants in our code.
 */
 const (
 	ILLEGAL = "ILLEGAL"
-	EOF = "EOF"
+	EOF     = "EOF"
 
 	//identifiers
 	IDENT = "IDENT" // add, foobar, x, y, ...
-	INT = "INT" // 1343456
+	INT   = "INT"   // 1343456
 
 	//operators
-	ASSIGN = "="
-	PLUS = "+"
-	MINUS = "-"
-	EQUAL = "=="
-	BANG = "!"
+	ASSIGN   = "="
+	PLUS     = "+"
+	MINUS    = "-"
+	EQUAL    = "=="
+	BANG     = "!"
 	ASTERISK = "*"
-	SLASH = "/"
-	LT = "<"
-	GT = ">"
+	SLASH    = "/"
+	LT       = "<"
+	GT       = ">"
 
 	//delimiters
-	COMMA = ","
+	COMMA     = ","
 	SEMICOLON = ";"
-	LPAREN = "("
-	RPAREN = ")"
-	LBRACE = "{"
-	RBRACE = "}"
+	LPAREN    = "("
+	RPAREN    = ")"
+	LBRACE    = "{"
+	RBRACE    = "}"
 
 	//keywords
 	FUNCTION = "FUNCTION"
-	LET = "LET"
-	IF = "IF"
-	ELSE = "ELSE"
-	TRUE = "TRUE"
-	FALSE = "FALSE"
-	RETURN = "RETURN"
+	LET      = "LET"
+	IF       = "IF"
+	ELSE     = "ELSE"
+	TRUE     = "TRUE"
+	FALSE    = "FALSE"
+	RETURN   = "RETURN"
 )
 
 type Type string
@@ -59,13 +59,13 @@ func NewToken(t Type, l byte) *Token {
 }
 
 var keywords = map[string]Type{
-	"fn": FUNCTION,
-	"let": LET,
-	"if" : IF,
-	"else" : ELSE,
-	"true" : TRUE,
-	"false" : FALSE,
-	"return" : RETURN,
+	"fn":     FUNCTION,
+	"let":    LET,
+	"if":     IF,
+	"else":   ELSE,
+	"true":   TRUE,
+	"false":  FALSE,
+	"return": RETURN,
 }
 
 //GetIdentifier check if given word is an identifier or a keyword.
