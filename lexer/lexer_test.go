@@ -226,3 +226,32 @@ func TestNextTokenWithCode3(t *testing.T) {
 		is.Equal(tkn.Literal, tt.expectedLiteral)
 	}
 }
+
+func TestNextTokenWithComparisons(t *testing.T) {
+	is := is2.New(t)
+	input := `10 == 10; 10 != 9;`
+
+	tests := []struct {
+		expectedType    token.Type
+		expectedLiteral string
+	}{
+		{token.INT, "10"},
+		{token.EQUAL, "=="},
+		{token.INT, "10"},
+		{token.SEMICOLON, ";"},
+		{token.INT, "10"},
+		{token.NOT_EQUAL, "!="},
+		{token.INT, "9"},
+		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
+	}
+
+	lx := NewLexer(input)
+
+	for _, tt := range tests {
+		tkn := lx.NextToken()
+
+		is.True(tkn.Type == tt.expectedType)
+		is.Equal(tkn.Literal, tt.expectedLiteral)
+	}
+}

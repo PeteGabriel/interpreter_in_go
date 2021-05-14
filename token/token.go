@@ -17,6 +17,7 @@ const (
 	PLUS     = "+"
 	MINUS    = "-"
 	EQUAL    = "=="
+	NOT_EQUAL    = "!="
 	BANG     = "!"
 	ASTERISK = "*"
 	SLASH    = "/"
