@@ -78,9 +78,10 @@ func (l *Lexer) NextToken() *token.Token {
 	case '>':
 		tkn = token.NewToken(token.GT, l.char)
 	case 0:
-		tkn = &token.Token{}
-		tkn.Literal = ""
-		tkn.Type = token.EOF
+		tkn = &token.Token{
+			Literal : "",
+			Type : token.EOF,
+		}
 	default: //keywords and identifiers
 		if isLetter(l.char) {
 			tkn = &token.Token{}
