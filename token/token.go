@@ -9,8 +9,8 @@ const (
 	EOF     = "EOF"
 
 	//identifiers
-	IDENT = "IDENT" // add, foobar, x, y, ...
-	INT   = "INT"   // 1343456
+	IDENTIFIER = "IDENTIFIER" // add, foobar, x, y, ...
+	INT        = "INT"   // 1343456
 
 	//operators
 	ASSIGN   = "="
@@ -74,5 +74,5 @@ func GetIdentifier(ident string) Type {
 	if t, ok := keywords[ident]; ok == true {
 		return t
 	}
-	return IDENT
+	return IDENTIFIER
 }

@@ -73,4 +73,37 @@ names.
 
 ## The Parser
 
-tbc
+Basically, a parser turns its input into a data structure that represents the input. It checks its correctness in the 
+process. This component is responsible for parser errors.
+
+As an example:
+
+```
+var input = 'if (3 * 5 > 10) { return "hello"; } else { return "goodbye"; }';
+var tokens = MagicLexer.parse(input);
+MagicParser.parse(tokens);
+```
+```javascript
+{
+  type: "if-statement",
+  condition: {
+    type: "operator-expression",
+    operator: ">",
+    left: {
+      type: "operator-expression",
+      operator: "*",
+      left: { type: "integer-literal", value: 3 },
+      right: { type: "integer-literal", value: 5 }
+    },
+    right: { type: "integer-literal", value: 10 }
+  },
+  consequence: {
+    type: "return-statement",
+    returnValue: { type: "string-literal", value: "hello" }
+  },
+  alternative: {
+    type: "return-statement",
+    returnValue: { type: "string-literal", value: "goodbye" }
+  }
+}
+```
