@@ -11,6 +11,7 @@ const (
 	//identifiers
 	IDENTIFIER = "IDENTIFIER" // add, foobar, x, y, ...
 	INT        = "INT"   // 1343456
+	EXPRESSION = "EXPRESSION"
 
 	//operators
 	ASSIGN   = "="

@@ -73,7 +73,7 @@ names.
 
 ## The Parser
 
-Basically, a parser turns its input into a data structure that represents the input. It checks its correctness in the 
+Basically, a parser turns its input into a data structure that represents the input and checks its correctness in the 
 process. This component is responsible for parser errors.
 
 As an example:
@@ -107,3 +107,18 @@ MagicParser.parse(tokens);
   }
 }
 ```
+
+## Abstract Syntax Tree
+
+For this project this data structure will be basically just composed by nodes connected to each other. This structure will 
+represent the program running. Represents the syntax almost exactly and omits irrelevant details like whitespace or so 
+(because these dont matter in our language). The implementation can be seen in the package [ast](./ast).
+
+
+## Parsing expressions
+
+Parsing statements is fairly straightforward. Reading from left to right and identify which keyword and from there parse
+ the rest of the statement. Parsing expressions is a bit more complicated. One of the problems building a parser is the
+operator precedence. The fact that expressions can be found in many different situations is also a problem that we need 
+to take care of by applying a a correct parsing procedure that is understandable and extensible since the beginning. 
+
