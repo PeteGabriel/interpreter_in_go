@@ -59,7 +59,7 @@ func (p *Root) String() string {
 //LetStatement represents a statement in the form of `let <identifier> = <expression>`
 type LetStatement struct {
 	Token token.Token
-	Name *Identifier
+	Name *IdentifierStatement
 	Value Expression
 }
 func (ls *LetStatement) statementNode(){}
@@ -80,21 +80,15 @@ func  (ls *LetStatement) String() string {
 	return out.String()
 }
 
-
-
-
-
-
-
-//Identifier of statement
-type Identifier struct {
+//IdentifierStatement of statement
+type IdentifierStatement struct {
 	Token token.Token
 	Value string
 }
-func (i *Identifier) expressionNode() {}
-func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
+func (i *IdentifierStatement) expressionNode()      {}
+func (i *IdentifierStatement) TokenLiteral() string { return i.Token.Literal }
 //String representation of an identifier.
-func  (i *Identifier) String() string {
+func  (i *IdentifierStatement) String() string {
 	return i.Value
 }
 

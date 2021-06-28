@@ -102,3 +102,23 @@ func TestStringOfStatement(t *testing.T){
 	expected := "let x = 5; return x;"
 	is.Equal(expected, prog.String())
 }
+
+func TestIdentifierExpression(t *testing.T){
+	is := is2.New(t)
+	input := `
+      foobar;
+    `
+	l := lexer.NewLexer(input)
+	p := NewParser(l)
+	prog := p.ParseProgram()
+
+	//check the len of statements
+	is.True(len(prog.Statements) == 1)
+	//check if the statement found is actually and expression
+	ident, ok := prog.Statements[0].(*ast.ExpressionStatement)
+	is.True(ok)
+	exp := ident.Expression.(*ast.IdentifierStatement)
+	is.Equal("foobar", ident.TokenLiteral())
+	is.Equal("foobar", exp.Value)
+
+}
