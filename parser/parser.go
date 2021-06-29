@@ -68,18 +68,18 @@ func (p *Parser) ParseStatement() ast.Statement {
 
 	switch p.curToken.Type {
 	case token.LET:
-		return p.ParseLetStatement()
+		return p.parseLetStatement()
 	case token.RETURN:
-		return p.ParseReturnStatement()
+		return p.parseReturnStatement()
 	default:
-		return p.ParseExpressionStatement()
+		return p.parseExpressionStatement()
 	}
 }
 
-//ParseLetStatement parses a statement of the type let.
+//parseLetStatement parses a statement of the type let.
 //let x = 9;
 //let myFn = sum;
-func (p *Parser) ParseLetStatement() *ast.LetStatement {
+func (p *Parser) parseLetStatement() *ast.LetStatement {
 	//validate that variable name comes after 'LET'
 	if p.curToken.Type == token.LET && p.peekToken.Type != token.IDENTIFIER {
 		return nil
@@ -106,9 +106,9 @@ func (p *Parser) ParseLetStatement() *ast.LetStatement {
 	return stmt
 }
 
-//ParseReturnStatement parses a statement of the type return.
+//parseReturnStatement parses a statement of the type return.
 //return <something>;
-func (p *Parser) ParseReturnStatement() *ast.ReturnStatement {
+func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	//validate we have found a return statement
 	if p.curToken.Type != token.RETURN {
 		return nil
@@ -127,10 +127,10 @@ func (p *Parser) ParseReturnStatement() *ast.ReturnStatement {
 	return stmt
 }
 
-//ParseExpressionStatement parses a statement of the type expression.
+//parseExpressionStatement parses a statement of the type expression.
 //5 + 5
 //if (something)
-func (p *Parser) ParseExpressionStatement() *ast.ExpressionStatement {
+func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	stmt := &ast.ExpressionStatement{Token: p.curToken}
 
 	stmt.Expression = p.parseExpression(LOWEST)
