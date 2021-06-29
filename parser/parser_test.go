@@ -1,14 +1,14 @@
 package parser
 
 import (
-	is2 "github.com/matryer/is"
 	"interpreter_in_go/ast"
 	"interpreter_in_go/lexer"
 	"testing"
+
+	is2 "github.com/matryer/is"
 )
 
-
-func TestReturnStatements(t *testing.T){
+func TestReturnStatements(t *testing.T) {
 	is := is2.New(t)
 
 	input := `
@@ -47,7 +47,7 @@ func TestReturnStatements(t *testing.T){
 	}
 }
 
-func TestParseLetStatements(t *testing.T){
+func TestParseLetStatements(t *testing.T) {
 	is := is2.New(t)
 
 	input := `
@@ -89,7 +89,7 @@ func testLetStatement(is *is2.I, stmt ast.Statement, expectedIdent string) {
 	is.True(letStmt.Name.TokenLiteral() == expectedIdent)
 }
 
-func TestStringOfStatement(t *testing.T){
+func TestStringOfStatement(t *testing.T) {
 	is := is2.New(t)
 	input := `
       let x = 5;
@@ -103,20 +103,42 @@ func TestStringOfStatement(t *testing.T){
 	is.Equal(expected, prog.String())
 }
 
-func TestIdentifierExpression(t *testing.T){
+func TestParseExpression(t *testing.T) {
 	is := is2.New(t)
-	input := `foobar;`
+	input := `
+	  foobar;	
+	`
 	l := lexer.NewLexer(input)
 	p := NewParser(l)
 	prog := p.ParseProgram()
 
 	//check the len of statements
 	is.True(len(prog.Statements) == 1)
-	//check if the statement found is actually and expression
+	//check that first statement found is actually an expression
 	ident, ok := prog.Statements[0].(*ast.ExpressionStatement)
 	is.True(ok)
 	exp := ident.Expression.(*ast.IdentifierStatement)
 	is.Equal("foobar", ident.TokenLiteral())
 	is.Equal("foobar", exp.Value)
 
+}
+
+func TestParseIntegerLiteral(t *testing.T) {
+	is := is2.New(t)
+	input := `
+	  5;	
+	`
+	l := lexer.NewLexer(input)
+	p := NewParser(l)
+	prog := p.ParseProgram()
+
+	//check the len of statements
+	is.True(len(prog.Statements) == 1)
+
+	//check that first statement found is actually an integer literal
+	intLiteralExp, ok := prog.Statements[0].(*ast.ExpressionStatement)
+	is.True(ok)
+	intLiteral := intLiteralExp.Expression.(*ast.IntegerLiteral)
+	is.Equal("5", intLiteral.TokenLiteral())
+	is.Equal(int64(5), intLiteral.Value)
 }

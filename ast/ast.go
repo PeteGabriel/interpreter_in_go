@@ -5,8 +5,6 @@ import (
 	"interpreter_in_go/token"
 )
 
-
-
 //Node represents one element in our ast
 type Node interface {
 	TokenLiteral() string
@@ -23,22 +21,19 @@ type Expression interface {
 	expressionNode()
 }
 
-
-
-
-
-
 //Root of every ast out parser produces.
 type Root struct {
 	Statements []Statement
 }
+
 func (p *Root) TokenLiteral() string {
 	if len(p.Statements) > 0 {
 		return p.Statements[0].TokenLiteral()
-	}else {
+	} else {
 		return ""
 	}
 }
+
 //String representation of a set of statements that compose a program.
 func (p *Root) String() string {
 	var out bytes.Buffer
@@ -48,26 +43,20 @@ func (p *Root) String() string {
 	return out.String()
 }
 
-
-
-
-
-
-
-
-
 //LetStatement represents a statement in the form of `let <identifier> = <expression>`
 type LetStatement struct {
 	Token token.Token
-	Name *IdentifierStatement
+	Name  *IdentifierStatement
 	Value Expression
 }
-func (ls *LetStatement) statementNode(){}
+
+func (ls *LetStatement) statementNode() {}
 func (ls *LetStatement) TokenLiteral() string {
 	return ls.Token.Literal
 }
+
 //String representation of a let statement. "let x = 1;"
-func  (ls *LetStatement) String() string {
+func (ls *LetStatement) String() string {
 	var out bytes.Buffer
 
 	out.WriteString(ls.TokenLiteral() + " ")
@@ -85,30 +74,26 @@ type IdentifierStatement struct {
 	Token token.Token
 	Value string
 }
+
 func (i *IdentifierStatement) expressionNode()      {}
 func (i *IdentifierStatement) TokenLiteral() string { return i.Token.Literal }
+
 //String representation of an identifier.
-func  (i *IdentifierStatement) String() string {
+func (i *IdentifierStatement) String() string {
 	return i.Value
 }
 
-
-
-
-
-
-
-
-
 //ReturnStatement represents a statement in the form of `return <expression>;`
 type ReturnStatement struct {
-	Token token.Token
+	Token       token.Token
 	ReturnValue Expression
 }
-func (rs *ReturnStatement) statementNode(){}
+
+func (rs *ReturnStatement) statementNode() {}
 func (rs *ReturnStatement) TokenLiteral() string {
 	return rs.Token.Literal
 }
+
 //String representation of a return statement. "return x;"
 func (rs *ReturnStatement) String() string {
 	var out bytes.Buffer
@@ -121,21 +106,13 @@ func (rs *ReturnStatement) String() string {
 	return out.String()
 }
 
-
-
-
-
-
-
-
-
-
 //ExpressionStatement represents an expression`
 type ExpressionStatement struct {
-	Token token.Token
+	Token      token.Token
 	Expression Expression
 }
-func (es *ExpressionStatement) statementNode(){}
+
+func (es *ExpressionStatement) statementNode() {}
 func (es *ExpressionStatement) TokenLiteral() string {
 	return es.Token.Literal
 }
@@ -144,4 +121,17 @@ func (es *ExpressionStatement) String() string {
 		return es.Expression.String()
 	}
 	return ""
+}
+
+type IntegerLiteral struct {
+	Token token.Token
+	Value int64
+}
+
+func (i *IntegerLiteral) expressionNode() {}
+func (i *IntegerLiteral) TokenLiteral() string {
+	return i.Token.Literal
+}
+func (i *IntegerLiteral) String() string {
+	return i.Token.Literal
 }

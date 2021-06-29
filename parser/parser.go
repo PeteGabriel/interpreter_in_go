@@ -1,9 +1,11 @@
 package parser
 
 import (
+	"fmt"
 	"interpreter_in_go/ast"
 	"interpreter_in_go/lexer"
 	"interpreter_in_go/token"
+	"strconv"
 )
 
 //Parser struct represents our parser from te pov of our program.
@@ -36,6 +38,7 @@ func NewParser(lxr *lexer.Lexer) *Parser {
 
 	//registration of parsing functions
 	p.registerPrefix(token.IDENTIFIER, p.parseIdentifier)
+	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 
 	p.curToken = *p.lxr.NextToken()
 	p.peekToken = *p.lxr.NextToken()
@@ -149,6 +152,20 @@ func (p *Parser) parseIdentifier() ast.Expression {
 		Token: p.curToken,
 		Value: p.curToken.Literal,
 	}
+}
+
+func (p *Parser) parseIntegerLiteral() ast.Expression {
+	il := &ast.IntegerLiteral{
+		Token: p.curToken,
+	}
+	literal, err := strconv.ParseInt(p.curToken.Literal, 0, 64)
+	if err != nil {
+		msg := fmt.Sprintf("could not parse %q as integer", p.curToken.Literal)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+	il.Value = literal
+	return il
 }
 
 func (p *Parser) ReadToken() {
