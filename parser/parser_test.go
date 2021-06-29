@@ -21,7 +21,7 @@ func TestReturnStatements(t *testing.T){
 
 	prog := p.ParseProgram()
 	is.True(prog != nil)
-	is.True(len(prog.Statements) == 3)
+	is.Equal(len(prog.Statements), 3)
 
 	tests := []struct {
 		expectedIdentifier string
@@ -105,9 +105,7 @@ func TestStringOfStatement(t *testing.T){
 
 func TestIdentifierExpression(t *testing.T){
 	is := is2.New(t)
-	input := `
-      foobar;
-    `
+	input := `foobar;`
 	l := lexer.NewLexer(input)
 	p := NewParser(l)
 	prog := p.ParseProgram()
