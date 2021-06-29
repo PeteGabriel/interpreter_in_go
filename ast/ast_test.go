@@ -16,14 +16,14 @@ func TestAstCreation(t *testing.T) {
 					Type:    token.LET,
 					Literal: "let",
 				},
-				Name: &Identifier{
+				Name: &IdentifierStatement{
 					Token: token.Token{
 						Type:    token.IDENTIFIER,
 						Literal: "number_ten",
 					},
 					Value: "number_ten",
 				},
-				Value: &Identifier{
+				Value: &IdentifierStatement{
 					Token: token.Token{
 						Type:    token.INT,
 						Literal: "10",
@@ -42,11 +42,11 @@ func TestString(t *testing.T) {
 		Statements: []Statement{
 			&LetStatement{
 				Token: token.Token{Type: token.LET, Literal: "let"},
-				Name: &Identifier{
+				Name: &IdentifierStatement{
 					Token: token.Token{Type: token.IDENTIFIER, Literal: "myVar"},
 					Value: "myVar",
 				},
-				Value: &Identifier{
+				Value: &IdentifierStatement{
 					Token: token.Token{Type: token.IDENTIFIER, Literal: "anotherVar"},
 					Value: "anotherVar",
 				},
