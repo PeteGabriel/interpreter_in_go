@@ -36,13 +36,18 @@ func NewParser(lxr *lexer.Lexer) *Parser {
 		prefixParseFns: make(map[token.Type]prefixParseFn),
 	}
 
-	//registration of parsing functions
-	p.registerPrefix(token.IDENTIFIER, p.parseIdentifier)
-	p.registerPrefix(token.INT, p.parseIntegerLiteral)
-
+	registerParsingFns(p)
+	
 	p.curToken = *p.lxr.NextToken()
 	p.peekToken = *p.lxr.NextToken()
 	return p
+}
+
+func registerParsingFns(p *Parser){
+	p.registerPrefix(token.IDENTIFIER, p.parseIdentifier)
+	p.registerPrefix(token.INT, p.parseIntegerLiteral)
+	p.registerPrefix(token.BANG, p.parsePrefixExpression)
+	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
 }
 
 //ParseProgram returns the root of our program
@@ -167,6 +172,20 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 	il.Value = literal
 	return il
 }
+
+func (p *Parser) parsePrefixExpression() ast.Expression {
+	prefix := &ast.PrefixExpression{
+		Token: p.curToken,
+		Operator: p.curToken.Literal,
+	}
+
+	p.ReadToken() //start what might be an expression
+
+	prefix.Right = p.parseExpression(PREFIX)
+
+	return prefix
+}
+
 
 func (p *Parser) ReadToken() {
 	p.curToken = p.peekToken
