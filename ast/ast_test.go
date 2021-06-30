@@ -56,3 +56,45 @@ func TestString(t *testing.T) {
 
 	is.Equal("let myVar = anotherVar;", program.String())
 }
+
+func TestPrefixExpressionToString(t *testing.T){
+	is := is2.New(t)
+	program := &Root{
+		Statements: []Statement{
+			&ExpressionStatement{
+				Token: token.Token{Type: token.BANG, Literal: "!"},
+				Expression: &PrefixExpression{
+					Token: token.Token{Type: token.BANG, Literal: "!"},
+					Operator: "-",
+					Right: &IntegerLiteral{
+						Token: token.Token{Type: token.INT, Literal: "5"},
+						Value: 5,
+					},
+				},
+			},
+		},
+	}
+
+	is.Equal("(-5)", program.String())
+}
+
+func TestInfixExpressionToString(t *testing.T){
+	is := is2.New(t)
+	program := &Root{
+		Statements: []Statement{
+			&ExpressionStatement{
+				Token: token.Token{Type: token.INT, Literal: "5"},
+				Expression: &InfixExpression{
+					Token: token.Token{Type: token.INT, Literal: "5"},
+					Operator: "+",
+					Left: &IntegerLiteral{
+						Token: token.Token{Type: token.INT, Literal: "5"},
+						Value: 5,
+					},
+				},
+			},
+		},
+	}
+
+	is.Equal("(5++)", program.String())
+}

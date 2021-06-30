@@ -46,8 +46,18 @@ func NewParser(lxr *lexer.Lexer) *Parser {
 func registerParsingFns(p *Parser){
 	p.registerPrefix(token.IDENTIFIER, p.parseIdentifier)
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
+
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
+	
+	p.registerInfix(token.PLUS, p.parseInfixExpression)
+	p.registerInfix(token.MINUS, p.parseInfixExpression)
+	p.registerInfix(token.SLASH, p.parseInfixExpression)
+	p.registerInfix(token.ASTERISK, p.parseInfixExpression)
+	p.registerInfix(token.EQUAL, p.parseInfixExpression)
+	p.registerInfix(token.NOT_EQUAL, p.parseInfixExpression)
+	p.registerInfix(token.LT, p.parseInfixExpression)
+	p.registerInfix(token.GT, p.parseInfixExpression)
 }
 
 //ParseProgram returns the root of our program
@@ -186,6 +196,19 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 	return prefix
 }
 
+func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
+	exp := &ast.InfixExpression{
+		Token: p.curToken,
+		Operator: p.curToken.Literal,
+		Left: left,
+	}
+
+	precedence := p.currentPrecedence()
+	p.ReadToken()
+	exp.Right = p.parseExpression(precedence)
+
+	return exp
+}
 
 func (p *Parser) ReadToken() {
 	p.curToken = p.peekToken
@@ -205,6 +228,17 @@ const (
 	CALL        // myFunction(X)
 )
 
+var precedences = map[token.Type]int{
+	token.EQUAL: EQUALS,
+	token.NOT_EQUAL: EQUALS,
+	token.LT: LESSGREATER,
+	token.GT: LESSGREATER,
+	token.PLUS: SUM,
+	token.MINUS: SUM,
+	token.SLASH: PRODUCT,
+	token.ASTERISK: PRODUCT,
+}
+
 type (
 	prefixParseFn func() ast.Expression
 	infixParseFn  func(ast.Expression) ast.Expression
@@ -223,5 +257,30 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	if prefix == nil {
 		return nil
 	}
-	return prefix()
+	leftExpression := prefix()
+	
+	for !(p.peekToken.Type == token.SEMICOLON) && precedence < p.peekPrecedence() {
+    infix := p.infixParseFns[p.peekToken.Type]
+		if infix == nil {
+			return leftExpression
+		}
+		p.ReadToken()
+		leftExpression = infix(leftExpression)
+	}
+	
+	return leftExpression
+}
+
+func (p *Parser) peekPrecedence() int {
+	if pd, ok := precedences[p.peekToken.Type]; ok {
+		return pd
+	}
+	return LOWEST
+}
+
+func (p *Parser) currentPrecedence() int {
+	if pd, ok := precedences[p.curToken.Type]; ok {
+		return pd
+	}
+	return LOWEST
 }

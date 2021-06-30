@@ -170,3 +170,41 @@ func TestParsingPrefixExpressions(t *testing.T) {
 		is.Equal(tt.operator, prefix.Operator)
 	}
 }
+
+func TestParsingInfixExpressions(t *testing.T) {
+	is := is2.New(t)
+	prefixTests := []struct {
+		input string
+    leftValue int64
+    operator string
+    rightValue int64
+	}{
+		{"5 + 5;", 5, "+", 5},
+		{"5 - 5;", 5, "-", 5},
+		{"5 * 5;", 5, "*", 5},
+		{"5 / 5;", 5, "/", 5},
+		{"5 > 5;", 5, ">", 5},
+		{"5 < 5;", 5, "<", 5},
+		{"5 == 5;", 5, "==", 5},
+		{"5 != 5;", 5, "!=", 5},
+	}
+
+	for _, tt := range prefixTests {
+		l := lexer.NewLexer(tt.input)
+		p := NewParser(l)
+		prog := p.ParseProgram()
+
+		is.True(len(prog.Statements) == 1)
+
+		exp, ok := prog.Statements[0].(*ast.ExpressionStatement)
+		is.True(ok)
+		prefix := exp.Expression.(*ast.InfixExpression)
+		leftVal, ok := prefix.Left.(*ast.IntegerLiteral)
+		is.True(ok)
+		rightVal, ok := prefix.Right.(*ast.IntegerLiteral)
+		is.True(ok)
+		is.Equal(tt.leftValue, leftVal.Value)
+		is.Equal(tt.rightValue, rightVal.Value)
+		is.Equal(tt.operator, prefix.Operator)
+	}
+}

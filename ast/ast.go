@@ -12,11 +12,15 @@ type Node interface {
 	String() string
 }
 
+//Statement represents a statement in our interpreter.
+//Something that does not return a value.
 type Statement interface {
 	Node
 	statementNode()
 }
 
+//Expression represents an expression in our interpreter.
+//Something that returns a value.
 type Expression interface {
 	Node
 	expressionNode()
@@ -124,6 +128,7 @@ func (es *ExpressionStatement) String() string {
 	return ""
 }
 
+//IntegerLiteral can be for example, '-5'.
 type IntegerLiteral struct {
 	Token token.Token
 	Value int64
@@ -137,17 +142,34 @@ func (i *IntegerLiteral) String() string {
 	return i.Token.Literal
 }
 
-
-
+//PrefixExpression represents something like '!isInvalid'.
+//It means it has an operator in the left side and an expression in the right side.
 type PrefixExpression struct {
-	Token token.Token
+	Token    token.Token
 	Operator string
-	Right Expression
+	Right    Expression
 }
+
 func (p *PrefixExpression) expressionNode() {}
 func (p *PrefixExpression) TokenLiteral() string {
 	return p.Token.Literal
 }
 func (p *PrefixExpression) String() string {
 	return fmt.Sprintf("(%s%s)", p.Operator, p.Right.String())
+}
+
+//InExpression represents something like 'counter++'.
+//It means it has an expression in the left side and an operator in the right side.
+type InfixExpression struct {
+	Token       token.Token
+	Left, Right Expression
+	Operator    string
+}
+
+func (inf *InfixExpression) expressionNode() {}
+func (inf *InfixExpression) TokenLiteral() string {
+	return inf.Token.Literal
+}
+func (inf *InfixExpression) String() string {
+	return fmt.Sprintf("(%s %s %s)", inf.Left.String(), inf.Operator, inf.Right.String())
 }

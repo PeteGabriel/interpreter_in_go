@@ -18,12 +18,14 @@ const (
 	PLUS     = "+"
 	MINUS    = "-"
 	EQUAL    = "=="
-	NOT_EQUAL    = "!="
+	NOT_EQUAL= "!="
 	BANG     = "!"
 	ASTERISK = "*"
 	SLASH    = "/"
 	LT       = "<"
 	GT       = ">"
+	INCREMENT= "++"
+	DECREMENT= "--"
 
 	//delimiters
 	COMMA     = ","
@@ -72,7 +74,7 @@ var keywords = map[string]Type{
 
 //GetIdentifier check if given word is an identifier or a keyword.
 func GetIdentifier(ident string) Type {
-	if t, ok := keywords[ident]; ok == true {
+	if t, ok := keywords[ident]; ok {
 		return t
 	}
 	return IDENTIFIER
