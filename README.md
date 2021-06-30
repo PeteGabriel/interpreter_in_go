@@ -122,3 +122,6 @@ Parsing statements is fairly straightforward. Reading from left to right and ide
 operator precedence. The fact that expressions can be found in many different situations is also a problem that we need 
 to take care of by applying a a correct parsing procedure that is understandable and extensible since the beginning. 
 
+![diagram](https://i.imgur.com/oo9UNwR.png)
+
+We can see below an high level representation of the flow for parsing an expression, the most complicated type of parsing in our interpreter. Because of recursivity we don't need many lines for each parsing function. 
