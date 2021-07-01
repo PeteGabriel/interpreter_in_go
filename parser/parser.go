@@ -37,19 +37,19 @@ func NewParser(lxr *lexer.Lexer) *Parser {
 	}
 
 	registerParsingFns(p)
-	
+
 	p.curToken = *p.lxr.NextToken()
 	p.peekToken = *p.lxr.NextToken()
 	return p
 }
 
-func registerParsingFns(p *Parser){
+func registerParsingFns(p *Parser) {
 	p.registerPrefix(token.IDENTIFIER, p.parseIdentifier)
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
-	
+
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
 	p.registerInfix(token.MINUS, p.parseInfixExpression)
 	p.registerInfix(token.SLASH, p.parseInfixExpression)
@@ -58,6 +58,9 @@ func registerParsingFns(p *Parser){
 	p.registerInfix(token.NOT_EQUAL, p.parseInfixExpression)
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
+
+	p.registerPrefix(token.FALSE, p.parseBooleanLiteral)
+	p.registerPrefix(token.TRUE, p.parseBooleanLiteral)
 }
 
 //ParseProgram returns the root of our program
@@ -70,9 +73,8 @@ func (p *Parser) ParseProgram() *ast.Root {
 	//while we do not reach the end of file
 	for p.curToken.Type != token.EOF {
 		stmt := p.ParseStatement()
-		if stmt != nil {
-			root.Statements = append(root.Statements, stmt)
-		}
+		root.Statements = append(root.Statements, stmt)
+
 		//get another token from lexer
 		p.ReadToken()
 	}
@@ -106,8 +108,8 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 	stmt := &ast.LetStatement{
 		Token: p.curToken,
 		Name: &ast.IdentifierStatement{
-			Token: p.curToken,
-			Value: p.curToken.Literal,
+			Token: p.peekToken,
+			Value: p.peekToken.Literal,
 		},
 		Value: nil,
 	}
@@ -117,9 +119,14 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		return nil
 	}
 
-	for p.curToken.Type != token.SEMICOLON {
+	//get to the right part of the let statement
+	for p.curToken.Type != token.ASSIGN {
 		p.ReadToken()
 	}
+	p.ReadToken()
+
+	//parse the right side
+	stmt.Value = p.parseExpression(LOWEST)
 
 	return stmt
 }
@@ -183,9 +190,25 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 	return il
 }
 
+func (p *Parser) parseBooleanLiteral() ast.Expression {
+	b := &ast.BooleanLiteral{
+		Token: p.curToken,
+	}
+
+	if val, err := strconv.ParseBool(p.curToken.Literal); err == nil {
+		b.Value = val
+	} else {
+		msg := fmt.Sprintf("could not parse %s as boolean", p.curToken.Literal)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+
+	return b
+}
+
 func (p *Parser) parsePrefixExpression() ast.Expression {
 	prefix := &ast.PrefixExpression{
-		Token: p.curToken,
+		Token:    p.curToken,
 		Operator: p.curToken.Literal,
 	}
 
@@ -198,9 +221,9 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	exp := &ast.InfixExpression{
-		Token: p.curToken,
+		Token:    p.curToken,
 		Operator: p.curToken.Literal,
-		Left: left,
+		Left:     left,
 	}
 
 	precedence := p.currentPrecedence()
@@ -229,14 +252,14 @@ const (
 )
 
 var precedences = map[token.Type]int{
-	token.EQUAL: EQUALS,
+	token.EQUAL:     EQUALS,
 	token.NOT_EQUAL: EQUALS,
-	token.LT: LESSGREATER,
-	token.GT: LESSGREATER,
-	token.PLUS: SUM,
-	token.MINUS: SUM,
-	token.SLASH: PRODUCT,
-	token.ASTERISK: PRODUCT,
+	token.LT:        LESSGREATER,
+	token.GT:        LESSGREATER,
+	token.PLUS:      SUM,
+	token.MINUS:     SUM,
+	token.SLASH:     PRODUCT,
+	token.ASTERISK:  PRODUCT,
 }
 
 type (
@@ -258,16 +281,16 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		return nil
 	}
 	leftExpression := prefix()
-	
+
 	for !(p.peekToken.Type == token.SEMICOLON) && precedence < p.peekPrecedence() {
-    infix := p.infixParseFns[p.peekToken.Type]
+		infix := p.infixParseFns[p.peekToken.Type]
 		if infix == nil {
 			return leftExpression
 		}
 		p.ReadToken()
 		leftExpression = infix(leftExpression)
 	}
-	
+
 	return leftExpression
 }
 

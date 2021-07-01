@@ -208,3 +208,18 @@ func TestParsingInfixExpressions(t *testing.T) {
 		is.Equal(tt.operator, prefix.Operator)
 	}
 }
+
+func TestBooleanLiteralParsing(t *testing.T){
+	is := is2.New(t)
+	input := `let isMonday = false`
+	l := lexer.NewLexer(input)
+	p := NewParser(l)
+	prog := p.ParseProgram()
+
+	is.True(len(prog.Statements) == 1)
+	
+	letStmt, ok := prog.Statements[0].(*ast.LetStatement)
+	is.True(ok)
+	is.Equal(letStmt.Name.Value, "isMonday")
+	is.Equal(letStmt.Value.String(), "false")
+}
