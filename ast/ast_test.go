@@ -98,3 +98,20 @@ func TestInfixExpressionToString(t *testing.T){
 
 	is.Equal("(5++)", program.String())
 }
+
+func TestBooleanLiteralToString(t *testing.T){
+	is := is2.New(t)
+	program := &Root{
+		Statements: []Statement{
+			&ExpressionStatement{
+				Token: token.Token{Type: token.FALSE, Literal: "false"},
+				Expression: &BooleanLiteral{
+					Token: token.Token{Type: token.FALSE, Literal: "false"},
+					Value: false,
+				},
+			},
+		},
+	}
+
+	is.Equal("false", program.String())
+}
