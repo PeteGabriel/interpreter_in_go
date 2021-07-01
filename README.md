@@ -4,7 +4,7 @@ This project reflects the study of the book "Interpreter in Go" writen by Thorst
 
 ## Language used - Monkey
 
-"Without a compiler or an interpreter a programming language is nothing more than an idea or a specification."
+> "Without a compiler or an interpreter a programming language is nothing more than an idea or a specification."
 
 Monkey has the following list of features:
 
@@ -109,18 +109,51 @@ MagicParser.parse(tokens);
 ```
 
 ## Abstract Syntax Tree
-
+---
 For this project this data structure will be basically just composed by nodes connected to each other. This structure will 
 represent the program running. Represents the syntax almost exactly and omits irrelevant details like whitespace or so 
 (because these dont matter in our language). The implementation can be seen in the package [ast](./ast).
 
+![ast_example](https://i.imgur.com/LBKD2Xh.png)
+
+(image from _'Writing an interpreter in Go'_)
+
+The image above is the representation of the expression _((1 + 2) + 3)_.
 
 ## Parsing expressions
-
+---
 Parsing statements is fairly straightforward. Reading from left to right and identify which keyword and from there parse
  the rest of the statement. Parsing expressions is a bit more complicated. One of the problems building a parser is the
 operator precedence. The fact that expressions can be found in many different situations is also a problem that we need 
 to take care of by applying a a correct parsing procedure that is understandable and extensible since the beginning. 
+
+
+### Parser structure insight:
+
+The following struct represents the concept of a parser inside this interpreter.
+
+```go
+type Parser struct {
+	lxr    *lexer.Lexer
+	errors []string
+
+	curToken  token.Token
+	peekToken token.Token
+
+   [...]
+}
+```
+
+The presence of a a lexer is understandable for obvious reasons. Perhaphs both fields of the type Token is not. This fields allow our parser to act like an iterator. The first points to the current token being looked at and the second allow us to make decisions based on what comes next.
+
+
+![cur_peek](https://imgur.com/GHgTVoO.png)
+
+(image from _'Writing an interpreter in Go'_)
+
+Not only but also because of this feature we can understand what kind of statements are we reading and parse it the best way possible.
+
+### Parsing an expression routine:
 
 ![diagram](https://i.imgur.com/oo9UNwR.png)
 
