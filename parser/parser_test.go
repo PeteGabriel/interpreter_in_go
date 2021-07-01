@@ -173,7 +173,7 @@ func TestParsingPrefixExpressions(t *testing.T) {
 
 func TestParsingInfixExpressions(t *testing.T) {
 	is := is2.New(t)
-	prefixTests := []struct {
+	infixTests := []struct {
 		input string
     leftValue int64
     operator string
@@ -189,7 +189,7 @@ func TestParsingInfixExpressions(t *testing.T) {
 		{"5 != 5;", 5, "!=", 5},
 	}
 
-	for _, tt := range prefixTests {
+	for _, tt := range infixTests {
 		l := lexer.NewLexer(tt.input)
 		p := NewParser(l)
 		prog := p.ParseProgram()
@@ -198,14 +198,14 @@ func TestParsingInfixExpressions(t *testing.T) {
 
 		exp, ok := prog.Statements[0].(*ast.ExpressionStatement)
 		is.True(ok)
-		prefix := exp.Expression.(*ast.InfixExpression)
-		leftVal, ok := prefix.Left.(*ast.IntegerLiteral)
+		infix := exp.Expression.(*ast.InfixExpression)
+		leftVal, ok := infix.Left.(*ast.IntegerLiteral)
 		is.True(ok)
-		rightVal, ok := prefix.Right.(*ast.IntegerLiteral)
+		rightVal, ok := infix.Right.(*ast.IntegerLiteral)
 		is.True(ok)
 		is.Equal(tt.leftValue, leftVal.Value)
 		is.Equal(tt.rightValue, rightVal.Value)
-		is.Equal(tt.operator, prefix.Operator)
+		is.Equal(tt.operator, infix.Operator)
 	}
 }
 
@@ -222,4 +222,38 @@ func TestBooleanLiteralParsing(t *testing.T){
 	is.True(ok)
 	is.Equal(letStmt.Name.Value, "isMonday")
 	is.Equal(letStmt.Value.String(), "false")
+}
+
+func TestInfixBooleanExpressions(t *testing.T){
+	is := is2.New(t)
+	boolExps := []struct{
+		input string
+		left bool
+		operator string
+		right bool
+	}{
+		{"false == true", false, "==", true},
+		{"false == false", false, "==", false},
+		{"false != true", false, "!=", true},
+		{"false != false", false, "!=", false},
+	}
+
+	for _, t := range boolExps {
+		l := lexer.NewLexer(t.input)
+		p := NewParser(l)
+		prog := p.ParseProgram()
+
+		is.True(len(prog.Statements) == 1)
+		exp, ok := prog.Statements[0].(*ast.ExpressionStatement)
+		is.True(ok)
+		infix := exp.Expression.(*ast.InfixExpression)
+
+    leftVal, ok := infix.Left.(*ast.BooleanLiteral)
+		is.True(ok)
+		rightVal, ok := infix.Right.(*ast.BooleanLiteral)
+		is.True(ok)
+		is.Equal(t.left, leftVal.Value)
+		is.Equal(t.right, rightVal.Value)
+		is.Equal(t.operator, infix.Operator)
+	}
 }
