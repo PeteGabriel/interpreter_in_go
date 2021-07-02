@@ -109,7 +109,7 @@ MagicParser.parse(tokens);
 ```
 
 ## Abstract Syntax Tree
----
+
 For this project this data structure will be basically just composed by nodes connected to each other. This structure will 
 represent the program running. Represents the syntax almost exactly and omits irrelevant details like whitespace or so 
 (because these dont matter in our language). The implementation can be seen in the package [ast](./ast).
@@ -121,7 +121,7 @@ represent the program running. Represents the syntax almost exactly and omits ir
 The image above is the representation of the expression _((1 + 2) + 3)_.
 
 ## Parsing expressions
----
+
 Parsing statements is fairly straightforward. Reading from left to right and identify which keyword and from there parse
  the rest of the statement. Parsing expressions is a bit more complicated. One of the problems building a parser is the
 operator precedence. The fact that expressions can be found in many different situations is also a problem that we need 
@@ -157,4 +157,4 @@ Not only but also because of this feature we can understand what kind of stateme
 
 ![diagram](https://i.imgur.com/oo9UNwR.png)
 
-We can see below an high level representation of the flow for parsing an expression, the most complicated type of parsing in our interpreter. Because of recursivity we don't need many lines for each parsing function. 
+We can see above an high level representation of the flow for parsing an expression, the most complicated type of parsing in our interpreter. Because of recursivity we don't need many lines for each parsing function. 
