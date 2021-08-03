@@ -257,3 +257,68 @@ func TestInfixBooleanExpressions(t *testing.T){
 		is.Equal(t.operator, infix.Operator)
 	}
 }
+
+
+func TestPrefixBooleanExpressions(t * testing.T){
+	is := is2.New(t)
+	boolExps := []struct{
+		input string
+		operator string
+		value interface{}
+	}{
+		{"!true;", "!", true},
+    {"!false;", "!", false},
+	}
+
+	for _, t := range boolExps {
+		l := lexer.NewLexer(t.input)
+		p := NewParser(l)
+		prog := p.ParseProgram()
+
+		is.True(len(prog.Statements) == 1)
+		exp, ok := prog.Statements[0].(*ast.ExpressionStatement)
+		is.True(ok)
+		
+		prefix := exp.Expression.(*ast.PrefixExpression)
+		prefixValue := prefix.Right.(*ast.BooleanLiteral)
+    
+		
+		is.Equal(t.value, prefixValue.Value)
+		is.Equal(t.operator, prefix.Operator)
+	}
+}
+
+
+func  TestOperatorPrecedenceParsing(t * testing.T){
+	is := is2.New(t)
+	exps := []struct{
+		input string
+		expected string
+	}{
+		{
+			"3 + 4; -5 * 5",
+			"(3 + 4)((-5) * 5)",
+		},
+		{
+			"2 / (5 + 5)",
+      "(2 / (5 + 5))",
+		},
+		{
+			"-(5 + 5)",
+			"(-(5 + 5))",
+		},
+		{
+			"!(true == true)",
+			"(!(true == true))",
+		},
+	}
+
+	for _, t := range exps {
+		l := lexer.NewLexer(t.input)
+		p := NewParser(l)
+		prog := p.ParseProgram()
+
+		parsedExp := prog.String()				
+		is.Equal(t.expected, parsedExp)
+	}
+}

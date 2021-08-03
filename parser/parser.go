@@ -61,6 +61,8 @@ func registerParsingFns(p *Parser) {
 
 	p.registerPrefix(token.FALSE, p.parseBooleanLiteral)
 	p.registerPrefix(token.TRUE, p.parseBooleanLiteral)
+
+	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
 }
 
 //ParseProgram returns the root of our program
@@ -306,4 +308,16 @@ func (p *Parser) currentPrecedence() int {
 		return pd
 	}
 	return LOWEST
+}
+
+func (p *Parser) parseGroupedExpression() ast.Expression {
+	p.ReadToken()
+
+	exp := p.parseExpression(LOWEST)
+	
+	if p.peekToken.Type != token.RPAREN {
+		return nil
+	}
+
+	return exp
 }
