@@ -322,3 +322,19 @@ func  TestOperatorPrecedenceParsing(t * testing.T){
 		is.Equal(t.expected, parsedExp)
 	}
 }
+
+
+func TestIfExpressionParsing(t *testing.T){
+	input := `if (x < y) { x }`
+	is := is2.New(t)
+
+	l := lexer.NewLexer(input)
+	p := NewParser(l)
+	prog := p.ParseProgram()
+
+	exp := prog.Statements[0].(*ast.ExpressionStatement)
+	ifExp := exp.Expression.(*ast.IfExpression)
+	is.Equal(ifExp.Token.Literal, "if")
+	is.Equal(ifExp.Condition.String(), "(x < y)")
+	is.Equal(ifExp.Consequence.String(), "x")
+}

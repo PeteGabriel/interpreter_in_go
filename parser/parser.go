@@ -63,6 +63,8 @@ func registerParsingFns(p *Parser) {
 	p.registerPrefix(token.TRUE, p.parseBooleanLiteral)
 
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
+
+	p.registerPrefix(token.IF, p.parseIfExpression)
 }
 
 //ParseProgram returns the root of our program
@@ -314,10 +316,53 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 	p.ReadToken()
 
 	exp := p.parseExpression(LOWEST)
-	
+
 	if p.peekToken.Type != token.RPAREN {
 		return nil
 	}
 
 	return exp
+}
+
+func (p *Parser) parseIfExpression() ast.Expression {
+	ifExp := &ast.IfExpression{
+		Token: p.curToken,
+	}
+
+	//validate correct syntax
+	if p.peekToken.Type != token.LPAREN {
+		return nil
+	}
+	p.ReadToken()
+	ifExp.Condition = p.parseExpression(LOWEST)
+
+	if p.peekToken.Type != token.RPAREN {
+		return nil
+	}else {
+		p.ReadToken()
+	}
+	if p.peekToken.Type != token.LBRACE {
+		return nil
+	}else {
+		p.ReadToken()
+	}
+
+	ifExp.Consequence = p.parseBlockStatement()
+
+	return ifExp
+}
+
+func (p *Parser) parseBlockStatement() *ast.BlockStatement {
+	bstm := &ast.BlockStatement{
+		Token: p.curToken,
+	}
+
+	//parse clause until the end
+	for p.curToken.Type != token.EOF {
+		stmt := p.ParseStatement()
+		bstm.Statements = append(bstm.Statements, stmt)
+		p.ReadToken()
+	}
+
+	return bstm
 }
