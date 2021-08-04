@@ -158,3 +158,5 @@ Not only but also because of this feature we can understand what kind of stateme
 ![diagram](https://i.imgur.com/oo9UNwR.png)
 
 We can see above an high level representation of the flow for parsing an expression, the most complicated type of parsing in our interpreter. Because of recursivity we don't need many lines for each parsing function. 
+
+All the registration of each parsing routine is made in the [parser#registerparsingFns](https://github.com/PeteGabriel/interpreter_in_go/blob/master/parser/parser.go#L46) function. This way allows a more general routine [parse#parseExpression](https://github.com/PeteGabriel/interpreter_in_go/blob/4a93732d7b65f1b7bd854bddd3b31370c45fbabc/parser/parser.go#L282) to index into the map of parsing functions with the given token type and retrieve the appropriate parsing function.
