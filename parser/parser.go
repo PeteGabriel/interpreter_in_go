@@ -66,7 +66,7 @@ func registerParsingFns(p *Parser) {
 
 	p.registerPrefix(token.IF, p.parseIfExpression)
 
-	p.registerPrefix(token.FunctionLiteral, p.parseFunctionExpression)
+	p.registerPrefix(token.FUNCTION, p.parseFunctionExpression)
 }
 
 //ParseProgram returns the root of our program
@@ -369,18 +369,21 @@ func (p *Parser) parseIfExpression() ast.Expression {
 // Parse expressions that resolve into a function. For example,
 // fn <parameters> <block statement>.
 // Functions can also be assigned as `let myFunction = fn(x, y) { return x + y; }`
-func (p *Parser) parseFunctionExpression() *ast.Expression {
-	funcExp := &ast.FunctionLiteral {
-		Token: p.curToken
+func (p *Parser) parseFunctionExpression() ast.Expression {
+	funcExp := &ast.FunctionLiteral{
+		Token: p.curToken,
 	}
 
-	if p.peekToken != token.LPAREN {
+	if p.peekToken.Literal != token.LPAREN {
 		return nil
+	}else{
+		//advance
+		p.ReadToken()
 	}
 
 	funcExp.Parameters = p.parseFunctionParameters()
 
-	if p.peekToken != token.LBRACE {
+	if p.peekToken.Literal != token.LBRACE {
 		return nil
 	}
 
@@ -395,6 +398,10 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 	}
 	block.Statements = []ast.Statement{}
 
+	//advance until the bock statement starts
+	for p.curToken.Type != token.LBRACE {
+		p.ReadToken()
+	}
 	p.ReadToken()
 
 	//parse clause until the end
@@ -407,6 +414,42 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 	return block
 }
 
-func (p *Parser) parseFunctionParameters() []*IdentifierStatement {
-	return nil
+
+// Parsing function parameters require validation of the left parantethis
+// as well as the right one. In between, collect an identifier, append it to the list,
+// find the next comma, read next identifier and append it to the list.
+// Loop until no comma is found.
+func (p *Parser) parseFunctionParameters() []*ast.IdentifierStatement {
+	identifiers := []*ast.IdentifierStatement{}
+
+	if p.peekToken.Literal == token.RPAREN {
+		p.ReadToken()
+		return identifiers
+	}
+
+	p.ReadToken()
+
+	ident := &ast.IdentifierStatement{
+		Token: p.curToken,
+		Value: p.curToken.Literal,
+	}
+	identifiers = append(identifiers, ident)
+
+	for p.peekToken.Literal == token.COMMA {
+		p.ReadToken()//advance the comma char
+		p.ReadToken()//advance to the next identifier
+		ident := &ast.IdentifierStatement{
+			Token: p.curToken,
+			Value: p.curToken.Literal,
+		}
+		identifiers = append(identifiers, ident)
+	}
+
+	if p.peekToken.Literal != token.RPAREN {
+		return nil
+	}
+
+	p.ReadToken() //advance to ')' char. Ready to parse block statements.
+
+	return identifiers
 }
