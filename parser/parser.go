@@ -65,6 +65,8 @@ func registerParsingFns(p *Parser) {
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
 
 	p.registerPrefix(token.IF, p.parseIfExpression)
+
+	p.registerPrefix(token.FunctionLiteral, p.parseFunctionExpression)
 }
 
 //ParseProgram returns the root of our program
@@ -150,6 +152,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 	p.ReadToken()
 	for p.curToken.Literal != token.SEMICOLON {
+		stmt.ReturnValue = p.parseExpression(LOWEST)
 		p.ReadToken()
 	}
 
@@ -338,31 +341,72 @@ func (p *Parser) parseIfExpression() ast.Expression {
 
 	if p.peekToken.Type != token.RPAREN {
 		return nil
-	}else {
+	} else {
 		p.ReadToken()
 	}
 	if p.peekToken.Type != token.LBRACE {
 		return nil
-	}else {
+	} else {
 		p.ReadToken()
 	}
 
 	ifExp.Consequence = p.parseBlockStatement()
 
+	//support the 'else' clause
+	p.ReadToken()
+	if p.peekToken.Type != token.ELSE {
+		p.ReadToken()
+		if p.peekToken.Type != token.LBRACE {
+			return nil
+		}
+
+		ifExp.Alternative = p.parseBlockStatement()
+	}
+
 	return ifExp
 }
 
-func (p *Parser) parseBlockStatement() *ast.BlockStatement {
-	bstm := &ast.BlockStatement{
-		Token: p.curToken,
+// Parse expressions that resolve into a function. For example,
+// fn <parameters> <block statement>.
+// Functions can also be assigned as `let myFunction = fn(x, y) { return x + y; }`
+func (p *Parser) parseFunctionExpression() *ast.Expression {
+	funcExp := &ast.FunctionLiteral {
+		Token: p.curToken
 	}
 
+	if p.peekToken != token.LPAREN {
+		return nil
+	}
+
+	funcExp.Parameters = p.parseFunctionParameters()
+
+	if p.peekToken != token.LBRACE {
+		return nil
+	}
+
+	funcExp.Body = p.parseBlockStatement()
+
+	return funcExp
+}
+
+func (p *Parser) parseBlockStatement() *ast.BlockStatement {
+	block := &ast.BlockStatement{
+		Token: p.curToken,
+	}
+	block.Statements = []ast.Statement{}
+
+	p.ReadToken()
+
 	//parse clause until the end
-	for p.curToken.Type != token.EOF {
+	for p.curToken.Type != token.RBRACE {
 		stmt := p.ParseStatement()
-		bstm.Statements = append(bstm.Statements, stmt)
+		block.Statements = append(block.Statements, stmt)
 		p.ReadToken()
 	}
 
-	return bstm
+	return block
+}
+
+func (p *Parser) parseFunctionParameters() []*IdentifierStatement {
+	return nil
 }

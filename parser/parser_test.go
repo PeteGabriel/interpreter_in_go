@@ -12,8 +12,8 @@ func TestReturnStatements(t *testing.T) {
 	is := is2.New(t)
 
 	input := `
-      return 10;
-      return 5;
+			return 13;
+			return 1;
       return add(13);
     `
 	l := lexer.NewLexer(input)
@@ -24,13 +24,12 @@ func TestReturnStatements(t *testing.T) {
 	is.Equal(len(prog.Statements), 3)
 
 	tests := []struct {
+		expectedToken string
 		expectedIdentifier string
 	}{
-		{"return"},
-		{"10"},
-		{"return"},
-		{"5"},
-		{"return"},
+		{"return", "13"},
+		{"return", "1"},
+		{"return", "add(13)"},
 	}
 
 	for i, ts := range tests {
@@ -39,11 +38,11 @@ func TestReturnStatements(t *testing.T) {
 		is.True(stmt.TokenLiteral() == "return")
 
 		//convert stmt to specific let stmt
-		letStmt, ok := stmt.(*ast.LetStatement)
+		letStmt, ok := stmt.(*ast.ReturnStatement)
 		is.Equal(ok, true)
 
-		is.True(letStmt.Name.Value == ts.expectedIdentifier)
-		is.True(letStmt.Name.TokenLiteral() == ts.expectedIdentifier)
+		is.True(letStmt.Token.Literal == ts.expectedToken)
+		is.True(letStmt.ReturnValue.String() == ts.expectedIdentifier)
 	}
 }
 
@@ -337,4 +336,23 @@ func TestIfExpressionParsing(t *testing.T){
 	is.Equal(ifExp.Token.Literal, "if")
 	is.Equal(ifExp.Condition.String(), "(x < y)")
 	is.Equal(ifExp.Consequence.String(), "x")
+}
+
+func TestFunctionLiteralParsing(t *testing.T){
+	is := is2.New(t)
+	input := `fn(x, y) { x + y; }`
+	l := lexer.NewLexer(input)
+	p := NewParser(l)
+	program := p.ParseProgram()
+
+	
+	is.Equal(len(program.Statements), 1)
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	is.True(ok)
+
+	function, ok := stmt.Expression.(*ast.FunctionLiteral)
+	is.True(ok)
+
+	is.Equal(len(function.Parameters), 2)
+	is.Equal(len(function.Body.Statements), 1)
 }

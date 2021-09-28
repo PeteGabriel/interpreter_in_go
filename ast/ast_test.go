@@ -83,12 +83,16 @@ func TestInfixExpressionToString(t *testing.T){
 	program := &Root{
 		Statements: []Statement{
 			&ExpressionStatement{
-				Token: token.Token{Type: token.INT, Literal: "5"},
+				Token: token.Token{Type: token.EXPRESSION, Literal: ""},
 				Expression: &InfixExpression{
-					Token: token.Token{Type: token.INT, Literal: "5"},
+					Token: token.Token{Type: token.EXPRESSION, Literal: ""},
 					Operator: "+",
 					Left: &IntegerLiteral{
-						Token: token.Token{Type: token.INT, Literal: "5"},
+						Token: token.Token{Type: token.INT, Literal: "1"},
+						Value: 5,
+					},
+					Right: &IntegerLiteral{
+						Token: token.Token{Type: token.INT, Literal: "2"},
 						Value: 5,
 					},
 				},
@@ -96,7 +100,7 @@ func TestInfixExpressionToString(t *testing.T){
 		},
 	}
 
-	is.Equal("(5++)", program.String())
+	is.Equal("(1 + 2)", program.String())
 }
 
 func TestBooleanLiteralToString(t *testing.T){
